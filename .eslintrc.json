@@ -1,0 +1,23 @@
+{
+	"root": true,
+	"extends": ["neon/common", "neon/node", "neon/typescript", "neon/prettier", "neon/module"],
+	"parserOptions": {
+		"project": "./tsconfig.eslint.json"
+	},
+	"env": {
+		"jest": true
+	},
+	"globals": {
+		"NodeJS": "readonly"
+	},
+	"rules": {
+		"@typescript-eslint/ban-types": "off",
+		"@typescript-eslint/no-extraneous-class": "off",
+		"import/extensions": "error",
+		"curly": ["error", "all"],
+		"no-eq-null": "off",
+		"no-unused-vars": "off",
+		"no-useless-constructor": "off",
+		"unicorn/require-post-message-target-origin": "off"
+	}
+}
