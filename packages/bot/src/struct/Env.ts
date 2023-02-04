@@ -11,7 +11,9 @@ export class Env {
 
 	public readonly deploySlashCommands = Boolean(process.env.DEPLOY);
 
-	private readonly KEYS = ['DISCORD_TOKEN', 'DISCORD_CLIENT_ID', 'NODE_ENV'] as const;
+	public readonly redisUrl = process.env.REDIS_URL!;
+
+	private readonly KEYS = ['DISCORD_TOKEN', 'DISCORD_CLIENT_ID', 'NODE_ENV', 'REDIS_URL'] as const;
 
 	public constructor() {
 		for (const key of this.KEYS) {

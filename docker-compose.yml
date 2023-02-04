@@ -17,6 +17,16 @@ services:
       interval: 10s
       timeout: 5s
 
+  redis:
+    image: redis:6-alpine
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli ping']
+      interval: 10s
+      timeout: 5s
+
   bot:
     image: chatsift/social
     build:
@@ -36,3 +46,5 @@ services:
 volumes:
   postgres-data:
     name: 'social-postgres-data'
+  redis-data:
+    name: 'social-redis-data'

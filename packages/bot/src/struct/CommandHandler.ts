@@ -190,9 +190,8 @@ export class CommandHandler {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-	public async init(): Promise<void[]> {
-		return Promise.all([this.registerCommands(), this.registerComponents()]);
+	public async init(): Promise<void> {
+		await Promise.all([this.registerCommands(), this.registerComponents()]);
 	}
 
 	public checkForMissingClientPermissions(

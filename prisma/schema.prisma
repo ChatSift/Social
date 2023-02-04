@@ -8,5 +8,18 @@ datasource db {
 }
 
 model GuildSettings {
-  guildId          String  @id
+  guildId                  String @id
+  requiredMessages         Int
+  // Stored in seconds
+  requiredMessagesTimespan Int?
+  xpGain                   Int
+}
+
+model User {
+  userId  String
+  guildId String
+  // Total XP the user has. Has no regard to level calculations or anything of the sort
+  xp      Int    @default(0)
+
+  @@id([userId, guildId])
 }
