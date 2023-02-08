@@ -13,6 +13,8 @@ model GuildSettings {
   // Stored in seconds
   requiredMessagesTimespan Int?
   xpGain                   Int
+  requiredXpBase           Int
+  requiredXpMultiplier     Int
 }
 
 model User {
