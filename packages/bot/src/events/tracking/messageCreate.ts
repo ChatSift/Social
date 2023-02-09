@@ -1,14 +1,17 @@
 import type { GuildSettings, User } from '@prisma/client';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, LevelUpNotificationMode } from '@prisma/client';
 import { DiscordSnowflake } from '@sapphire/snowflake';
-import type { Message } from 'discord.js';
+import type { Message, Role, TextChannel } from 'discord.js';
 import { Events } from 'discord.js';
 import { Redis } from 'ioredis';
 import { inject, singleton } from 'tsyringe';
 import type { Event } from '../../struct/Event.js';
 import { assertDebug } from '../../util/assert.js';
+import { calculateRequiredXp, calculateUserLevel } from '../../util/calculateLevel.js';
 import { logger } from '../../util/logger.js';
 import { SYMBOLS } from '../../util/symbols.js';
+import type { TemplateData } from '../../util/templateLevelUpMessage.js';
+import { templateLevelUpMessage } from '../../util/templateLevelUpMessage.js';
 
 @singleton()
 export default class implements Event<typeof Events.MessageCreate> {
@@ -19,6 +22,10 @@ export default class implements Event<typeof Events.MessageCreate> {
 	public async handle(message: Message) {
 		// First, see if we're in a guild
 		if (!message.inGuild()) {
+			return null;
+		}
+
+		if (message.author.bot) {
 			return null;
 		}
 
@@ -59,7 +66,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 		}
 
 		// Grant XP
-		await this.prisma.user.update({
+		const updated = await this.prisma.user.update({
 			where: {
 				userId_guildId: {
 					userId: user.userId,
@@ -72,6 +79,113 @@ export default class implements Event<typeof Events.MessageCreate> {
 				},
 			},
 		});
+
+		// Check if the user leveled up
+		// calculateUserLevel is O(n) where n is the user's level, so we want to avoid calling it twice
+		// we'll calculate their level prior to gaining XP, calculate how much is required for the next level,
+		// and see if they've surpassed that amount
+		const oldLevel = calculateUserLevel(settings, user);
+		const requiredXp = calculateRequiredXp(settings, oldLevel + 1);
+
+		logger.trace({ oldLevel, requiredXp, updatedXp: updated.xp }, 'Checking if user leveled up');
+
+		if (updated.xp >= requiredXp) {
+			// Query for all rewards that are eligible for the user just in case they're missing a role
+			// for whatever reason
+			const rewards = await this.prisma.reward.findMany({
+				where: {
+					guildId: user.guildId,
+					level: {
+						lte: oldLevel + 1,
+					},
+				},
+			});
+			// Now compute the rewards they actually just earned
+			const rewardRoles = message.guild.roles.cache.filter((role) =>
+				rewards.find((reward) => reward.roleId === role.id),
+			);
+			const earnedRewards = rewards.filter((reward) => reward.level === oldLevel + 1);
+
+			const nonManagedExitingRoles = [
+				...message.member!.roles.cache.filter((role) => !role.managed && !rewardRoles.has(role.id)).values(),
+			];
+
+			// Use a set to de-dupe
+			const roles = [
+				...new Set([
+					...(settings.cleanRewardRoles ? earnedRewards.map((reward) => reward.roleId) : rewardRoles.keys()),
+					...nonManagedExitingRoles,
+				]),
+			];
+
+			try {
+				await message.member!.roles.set(roles);
+			} catch (error) {
+				logger.warn({ err: error }, 'Failed to set roles for user after leveling up');
+			}
+
+			const template: TemplateData = {
+				earnedRewards: earnedRewards.length
+					? ` and received: ${earnedRewards.map((reward) => rewardRoles.get(reward.roleId)!.name).join(', ')}`
+					: '',
+				guildName: message.guild.name,
+				level: String(oldLevel + 1),
+				username: message.author.username,
+			};
+			const notification = templateLevelUpMessage(
+				settings.levelUpNotificationMessage ??
+					`{{ username }}, you just reached level {{ level }} in {{ guildName }}{{ earnedRewards }}!`,
+				template,
+			);
+
+			switch (settings.levelUpNotificationMode) {
+				case LevelUpNotificationMode.None: {
+					break;
+				}
+
+				case LevelUpNotificationMode.DM: {
+					try {
+						await message.author.send(notification);
+					} catch (error) {
+						logger.warn({ err: error }, 'Failed to send level up notification to user');
+					}
+
+					break;
+				}
+
+				case LevelUpNotificationMode.Channel: {
+					try {
+						await message.channel.send(notification);
+					} catch (error) {
+						logger.warn({ err: error }, 'Failed to send level up notification to current channel');
+						if (settings.levelUpNotificationFallbackChannelId) {
+							const fallbackChannel = message.guild.channels.cache.get(
+								settings.levelUpNotificationFallbackChannelId,
+							) as TextChannel | undefined;
+							if (fallbackChannel) {
+								try {
+									await fallbackChannel.send(notification);
+								} catch (error) {
+									logger.warn({ err: error }, 'Failed to send level up notification to fallback channel');
+								}
+							} else {
+								logger.warn({ settings }, 'Fallback channel no longer exists in guild');
+								await this.prisma.guildSettings.update({
+									data: {
+										levelUpNotificationFallbackChannelId: null,
+									},
+									where: {
+										guildId: message.guildId,
+									},
+								});
+							}
+						}
+					}
+
+					break;
+				}
+			}
+		}
 	}
 
 	private async isEligible(settings: GuildSettings, user: User, message: Message): Promise<boolean> {

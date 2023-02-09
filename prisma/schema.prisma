@@ -7,14 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum LevelUpNotificationMode {
+  None
+  DM
+  Channel
+}
+
 model GuildSettings {
-  guildId                  String @id
-  requiredMessages         Int
+  guildId                              String                  @id
+  requiredMessages                     Int
   // Stored in seconds
-  requiredMessagesTimespan Int?
-  xpGain                   Int
-  requiredXpBase           Int
-  requiredXpMultiplier     Int
+  requiredMessagesTimespan             Int?
+  xpGain                               Int
+  requiredXpBase                       Int
+  requiredXpMultiplier                 Int
+  levelUpNotificationMode              LevelUpNotificationMode @default(None)
+  levelUpNotificationFallbackChannelId String?
+  levelUpNotificationMessage           String?
+  cleanRewardRoles                     Boolean                 @default(true)
+}
+
+model Reward {
+  roleId  String
+  guildId String
+  level   Int
+
+  @@id([roleId, guildId])
 }
 
 model User {

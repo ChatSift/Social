@@ -10,7 +10,7 @@ export function calculateRequiredXp(settings: GuildSettings, level: number): num
 
 	const { requiredXpBase, requiredXpMultiplier } = settings;
 	// https://didinele.me/blog/math-journey - closed form formula for https://oeis.org/A000217, avoiding a recurring series
-	return requiredXpBase + level * requiredXpMultiplier * (2 * level - 1);
+	return requiredXpBase + (requiredXpMultiplier * (level * (level - 1))) / 2;
 }
 
 export function calculateUserLevel(settings: GuildSettings, user: User): number {
