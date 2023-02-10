@@ -60,6 +60,28 @@ export default class implements Event<typeof Events.MessageCreate> {
 			},
 		});
 
+		if (user.ignored) {
+			return null;
+		}
+
+		const channel = await this.prisma.channel.findFirst({
+			where: {
+				guildId: message.guildId,
+				OR: [
+					{
+						channelId: message.channelId,
+					},
+					{
+						channelId: message.channel.parentId ?? undefined,
+					},
+				],
+			},
+		});
+
+		if (channel?.ignored) {
+			return null;
+		}
+
 		// Run user eligibility checks
 		if (!(await this.isEligible(settings, user, message))) {
 			return null;
@@ -75,7 +97,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 			},
 			data: {
 				xp: {
-					increment: settings.xpGain,
+					increment: settings.xpGain * (channel?.multiplier ?? 1),
 				},
 			},
 		});

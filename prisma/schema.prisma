@@ -39,7 +39,17 @@ model User {
   userId  String
   guildId String
   // Total XP the user has. Has no regard to level calculations or anything of the sort
-  xp      Int    @default(0)
+  xp      Int     @default(0)
+  ignored Boolean @default(false)
 
   @@id([userId, guildId])
+}
+
+model Channel {
+  channelId  String
+  guildId    String
+  ignored    Boolean @default(false)
+  multiplier Int?    @default(1)
+
+  @@id([channelId, guildId])
 }
