@@ -74,6 +74,9 @@ export default class implements Event<typeof Events.MessageCreate> {
 					{
 						channelId: message.channel.parentId ?? undefined,
 					},
+					{
+						channelId: message.channel.isThread() ? message.channel.parent?.parentId ?? undefined : undefined,
+					},
 				],
 			},
 		});
