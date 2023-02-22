@@ -1,1 +1,1 @@
-export { default as GetHelloRoute } from './helloWorld.js';
+export { default as GetSettingsRoute } from './getSettings.js';

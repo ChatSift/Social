@@ -2,13 +2,13 @@ import { Route, RouteMethod } from '@chatsift/rest-utils';
 import { PrismaClient } from '@prisma/client';
 import type { Middleware, Request, Response } from 'polka';
 import { singleton } from 'tsyringe';
-import type { GuildSettings } from '../util/models.js';
+import type { GuildSettings } from '../util/models';
 
 @singleton()
-export default class extends Route<GuildSettings, never> {
+export default class extends Route<GuildSettings | { guildId: string }, never> {
 	public info = {
 		method: RouteMethod.get,
-		path: '/social/v1/hello/',
+		path: '/social/v1/guilds/:guildId/settings/',
 	} as const;
 
 	public override middleware: Middleware[] = [];
@@ -17,9 +17,14 @@ export default class extends Route<GuildSettings, never> {
 		super();
 	}
 
-	public handle(req: Request, res: Response) {
+	public async handle(req: Request, res: Response) {
+		const { guildId } = req.params as { guildId: string };
+		const guildSettings = await this.prisma.guildSettings.findFirst({
+			where: { guildId },
+		});
+
 		res.statusCode = 200;
 		res.setHeader('Content-Type', 'application/json');
-		res.end(JSON.stringify({ hello: 'world' }));
+		res.end(JSON.stringify(guildSettings ?? { guildId }));
 	}
 }
