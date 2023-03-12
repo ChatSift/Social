@@ -1,7 +1,7 @@
 import type { GuildSettings, User } from '@prisma/client';
 import { PrismaClient, LevelUpNotificationMode } from '@prisma/client';
 import { DiscordSnowflake } from '@sapphire/snowflake';
-import type { Message, Role, TextChannel } from 'discord.js';
+import type { Message, TextChannel } from 'discord.js';
 import { Events } from 'discord.js';
 import { Redis } from 'ioredis';
 import { inject, singleton } from 'tsyringe';
