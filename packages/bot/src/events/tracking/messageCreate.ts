@@ -7,7 +7,7 @@ import { Redis } from 'ioredis';
 import { inject, singleton } from 'tsyringe';
 import type { Event } from '../../struct/Event.js';
 import { assertDebug } from '../../util/assert.js';
-import { calculateRequiredXp, calculateUserLevel } from '../../util/calculateLevel.js';
+import { calculateTotalRequiredXp, calculateUserLevel } from '../../util/calculateLevel.js';
 import { logger } from '../../util/logger.js';
 import { SYMBOLS } from '../../util/symbols.js';
 import type { TemplateData } from '../../util/templateLevelUpMessage.js';
@@ -110,7 +110,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 		// we'll calculate their level prior to gaining XP, calculate how much is required for the next level,
 		// and see if they've surpassed that amount
 		const oldLevel = calculateUserLevel(settings, user);
-		const requiredXp = calculateRequiredXp(settings, oldLevel + 1);
+		const requiredXp = calculateTotalRequiredXp(settings, oldLevel + 1);
 
 		logger.trace({ oldLevel, requiredXp, updatedXp: updated.xp }, 'Checking if user leveled up');
 
