@@ -104,45 +104,46 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		const cleanRewardRoles = interaction.options.getBoolean('clean-reward-roles');
 
 		let settings = await this.prisma.guildSettings.findFirst({ where: { guildId: interaction.guildId } });
-		if (
-			!settings &&
-			!(requiredMessages !== null && xpGain !== null && requiredXpBase !== null && requiredXpMultiplier !== null)
-		) {
-			return interaction.reply({
-				content:
-					'For your first setup, you must provide `requiredMessages`, `xpGain`, `requiredXpbase`, and `requiredXpMultiplier`.',
+		if (settings) {
+			settings = await this.prisma.guildSettings.update({
+				data: {
+					requiredMessages: requiredMessages ?? undefined,
+					requiredMessagesTimespan: requiredMessagesTimespan ?? undefined,
+					xpGain: xpGain ?? undefined,
+					requiredXpBase: requiredXpBase ?? undefined,
+					requiredXpMultiplier: requiredXpMultiplier ?? undefined,
+					levelUpNotificationMode: levelUpNotificationMode ?? undefined,
+					levelUpNotificationFallbackChannelId: levelUpNotificationFallbackChannel?.id ?? undefined,
+					levelUpNotificationMessage: levelUpNotificationMessage ?? undefined,
+					cleanRewardRoles: cleanRewardRoles ?? undefined,
+				},
+				where: {
+					guildId: interaction.guildId,
+				},
+			});
+		} else {
+			if (!(requiredMessages !== null && xpGain !== null && requiredXpBase !== null && requiredXpMultiplier !== null)) {
+				return interaction.reply({
+					content:
+						'For your first setup, you must provide `requiredMessages`, `xpGain`, `requiredXpbase`, and `requiredXpMultiplier`.',
+				});
+			}
+
+			settings = await this.prisma.guildSettings.create({
+				data: {
+					guildId: interaction.guildId,
+					requiredMessages,
+					requiredMessagesTimespan,
+					xpGain,
+					requiredXpBase,
+					requiredXpMultiplier,
+					levelUpNotificationMode: levelUpNotificationMode ?? LevelUpNotificationMode.None,
+					levelUpNotificationFallbackChannelId: levelUpNotificationFallbackChannel?.id,
+					levelUpNotificationMessage,
+					cleanRewardRoles: cleanRewardRoles ?? true,
+				},
 			});
 		}
-
-		settings = await this.prisma.guildSettings.upsert({
-			create: {
-				guildId: interaction.guildId,
-				// These casts are safe due to !settings check from earlier
-				requiredMessages: requiredMessages!,
-				requiredMessagesTimespan,
-				xpGain: xpGain!,
-				requiredXpBase: requiredXpBase!,
-				requiredXpMultiplier: requiredXpMultiplier!,
-				levelUpNotificationMode: levelUpNotificationMode ?? LevelUpNotificationMode.None,
-				levelUpNotificationFallbackChannelId: levelUpNotificationFallbackChannel?.id,
-				levelUpNotificationMessage,
-				cleanRewardRoles: cleanRewardRoles ?? true,
-			},
-			update: {
-				requiredMessages: requiredMessages ?? undefined,
-				requiredMessagesTimespan: requiredMessagesTimespan ?? undefined,
-				xpGain: xpGain ?? undefined,
-				requiredXpBase: requiredXpBase ?? undefined,
-				requiredXpMultiplier: requiredXpMultiplier ?? undefined,
-				levelUpNotificationMode: levelUpNotificationMode ?? undefined,
-				levelUpNotificationFallbackChannelId: levelUpNotificationFallbackChannel?.id ?? undefined,
-				levelUpNotificationMessage: levelUpNotificationMessage ?? undefined,
-				cleanRewardRoles: cleanRewardRoles ?? undefined,
-			},
-			where: {
-				guildId: interaction.guildId,
-			},
-		});
 
 		const headings = ['General settings', 'Leveling formula', 'Notifications'] as const satisfies readonly string[];
 		const values = [

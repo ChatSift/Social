@@ -54,8 +54,6 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		const requiredNextTotal = calculateTotalRequiredXp(settings, level + 1);
 		const requiredNext = requiredNextTotal - required;
 
-		console.log(level, required, currentProgress, requiredNext);
-
 		const rewards = await this.prisma.reward.findMany({
 			where: {
 				guildId: interaction.guildId,
