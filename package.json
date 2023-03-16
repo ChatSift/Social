@@ -1,6 +1,6 @@
 {
 	"name": "@chatsift/social",
-	"description": "This does cool stuff",
+	"description": "Leveling & more",
 	"packageManager": "yarn@3.3.1",
 	"private": true,
 	"version": "0.0.0",
@@ -9,12 +9,12 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/chatsift/bot-template.git"
+		"url": "https://github.com/chatsift/social.git"
 	},
 	"bugs": {
-		"url": "https://github.com/chatsift/bot-template/issues"
+		"url": "https://github.com/chatsift/social/issues"
 	},
-	"homepage": "https://github.com/chatsift/bot-template",
+	"homepage": "https://github.com/chatsift/social",
 	"scripts": {
 		"lint": "turbo run lint && prettier --check --plugin-search-dir=. .",
 		"build": "turbo run build",
