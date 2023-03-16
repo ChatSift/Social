@@ -27,7 +27,7 @@ type RouteMethodMap = {
 	[RouteMethod.patch]: 'patch';
 };
 
-export type ModmailRoutes = {
+export type SocialRoutes = {
 	[Path in keyof RoutesByPaths]: {
 		[Method in RouteMethodMap[InferRouteMethod<RoutesByPaths[Path]>]]: Narrow<
 			RoutesByPaths[Path],
@@ -36,14 +36,14 @@ export type ModmailRoutes = {
 	};
 };
 
-export type InferModmailRouteBody<
-	TPath extends keyof ModmailRoutes,
-	TMethod extends keyof ModmailRoutes[TPath],
-> = InferRouteBody<ModmailRoutes[TPath][TMethod]>;
+export type InferSocialRouteBody<
+	TPath extends keyof SocialRoutes,
+	TMethod extends keyof SocialRoutes[TPath],
+> = InferRouteBody<SocialRoutes[TPath][TMethod]>;
 
-export type InferModmailRouteResult<
-	TPath extends keyof ModmailRoutes,
-	TMethod extends keyof ModmailRoutes[TPath],
-> = InferRouteResult<ModmailRoutes[TPath][TMethod]>;
+export type InferSocialRouteResult<
+	TPath extends keyof SocialRoutes,
+	TMethod extends keyof SocialRoutes[TPath],
+> = InferRouteResult<SocialRoutes[TPath][TMethod]>;
 
 export * from './util/models.js';
