@@ -24,13 +24,13 @@ model GuildSettings {
   levelUpNotificationMode              LevelUpNotificationMode @default(None)
   levelUpNotificationFallbackChannelId String?
   levelUpNotificationMessage           String?
-  cleanRewardRoles                     Boolean                 @default(true)
 }
 
 model Reward {
   roleId  String
   guildId String
   level   Int
+  clean   Boolean
 
   @@id([roleId, guildId])
 }

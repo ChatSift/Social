@@ -78,11 +78,6 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 				description: 'The message to send when a user levels up',
 				type: ApplicationCommandOptionType.String,
 			},
-			{
-				name: 'clean-reward-roles',
-				description: 'Whether to remove all previous reward roles when a user gains a new reward',
-				type: ApplicationCommandOptionType.Boolean,
-			},
 		],
 	};
 
@@ -101,7 +96,6 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 			'level-up-notification-fallback',
 		) as TextChannel | null;
 		const levelUpNotificationMessage = interaction.options.getString('level-up-notification-message');
-		const cleanRewardRoles = interaction.options.getBoolean('clean-reward-roles');
 
 		let settings = await this.prisma.guildSettings.findFirst({ where: { guildId: interaction.guildId } });
 		if (settings) {
@@ -115,7 +109,6 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 					levelUpNotificationMode: levelUpNotificationMode ?? undefined,
 					levelUpNotificationFallbackChannelId: levelUpNotificationFallbackChannel?.id ?? undefined,
 					levelUpNotificationMessage: levelUpNotificationMessage ?? undefined,
-					cleanRewardRoles: cleanRewardRoles ?? undefined,
 				},
 				where: {
 					guildId: interaction.guildId,
@@ -140,7 +133,6 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 					levelUpNotificationMode: levelUpNotificationMode ?? LevelUpNotificationMode.None,
 					levelUpNotificationFallbackChannelId: levelUpNotificationFallbackChannel?.id,
 					levelUpNotificationMessage,
-					cleanRewardRoles: cleanRewardRoles ?? true,
 				},
 			});
 		}
@@ -153,7 +145,6 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 					settings?.requiredMessagesTimespan?.toString() ?? 'Not set',
 				)}`,
 				`XP gain: ${inlineCode(settings?.xpGain?.toString() ?? 'Not set ❗')}`,
-				`Clean level rewards: ${inlineCode(settings?.cleanRewardRoles ? 'Yes' : 'No')}`,
 			],
 			[
 				`Required XP base: ${inlineCode(settings?.requiredXpBase?.toString() ?? 'Not set ❗')}`,

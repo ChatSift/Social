@@ -125,21 +125,23 @@ export default class implements Event<typeof Events.MessageCreate> {
 					},
 				},
 			});
-			// Now compute the rewards they actually just earned
 			const rewardRoles = message.guild.roles.cache.filter((role) =>
 				rewards.find((reward) => reward.roleId === role.id),
 			);
+			// Now compute the rewards they actually just earned
 			const earnedRewards = rewards.filter((reward) => reward.level === oldLevel + 1);
 
-			const nonManagedExitingRoles = [
+			const nonManagedExistingRoles = [
 				...message.member!.roles.cache.filter((role) => !role.managed && !rewardRoles.has(role.id)).values(),
 			];
 
-			// Use a set to de-dupe
+			// Use a set to de-dupe. Iterate over all the rewards and give the user all the non-clean ones, as well as
+			// the rewards for their current level.
 			const roles = [
 				...new Set([
-					...(settings.cleanRewardRoles ? earnedRewards.map((reward) => reward.roleId) : rewardRoles.keys()),
-					...nonManagedExitingRoles,
+					...rewards.filter((reward) => !reward.clean).map((reward) => reward.roleId),
+					...earnedRewards.map((reward) => reward.roleId),
+					...nonManagedExistingRoles,
 				]),
 			];
 
