@@ -30,7 +30,7 @@ model Reward {
   roleId  String
   guildId String
   level   Int
-  clean   Boolean
+  clean   Boolean @default(false)
 
   @@id([roleId, guildId])
 }
