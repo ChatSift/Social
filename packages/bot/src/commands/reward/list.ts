@@ -22,9 +22,11 @@ export default class implements Subcommand {
 		});
 
 		await interaction.reply({
-			content: rewards
-				.map((reward) => `• Level ${reward.level}: <@&${reward.roleId}> (Clean: ${reward.clean ? 'Yes' : 'No'})`)
-				.join('\n'),
+			content: rewards.length
+				? rewards
+						.map((reward) => `• Level ${reward.level}: <@&${reward.roleId}> (Clean: ${reward.clean ? 'Yes' : 'No'})`)
+						.join('\n')
+				: "You don't currently have any rewards.",
 		});
 	}
 }

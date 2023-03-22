@@ -27,7 +27,9 @@ export default class implements Subcommand {
 			.filter(Boolean) as GuildChannel[];
 
 		return interaction.reply({
-			content: channels.map((channel) => `• ${channel.toString()} (${channel.name})`).join('\n'),
+			content: channels.length
+				? channels.map((channel) => `• ${channel.toString()} (${channel.name})`).join('\n')
+				: 'No channels are ignored from XP gain',
 		});
 	}
 }
