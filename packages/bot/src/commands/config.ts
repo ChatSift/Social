@@ -39,7 +39,7 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 				description: 'The base amount of XP required to level up',
 				type: ApplicationCommandOptionType.Integer,
 				min_value: 1,
-				max_value: 100,
+				max_value: 500,
 			},
 			{
 				name: 'required-xp-multiplier',
