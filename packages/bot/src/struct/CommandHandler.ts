@@ -3,8 +3,11 @@ import { dirname, join, sep as pathSep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { readdirRecurse } from '@chatsift/readdir';
 import { REST } from '@discordjs/rest';
+import { PrismaClient } from '@prisma/client';
 import type { PermissionResolvable } from 'discord.js';
 import {
+	Colors,
+	EmbedBuilder,
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
 	type AutocompleteInteraction,
@@ -19,6 +22,7 @@ import {
 } from 'discord.js';
 import { container, singleton } from 'tsyringe';
 import { logger } from '../util/logger.js';
+import { templateSocialInteraction } from '../util/templateSocialInteraction.js';
 import type { Command, CommandConstructor, CommandWithSubcommands, Subcommand } from './Command.js';
 import { type Component, type ComponentConstructor, getComponentInfo } from './Component.js';
 import { Env } from './Env.js';
@@ -29,7 +33,7 @@ export class CommandHandler {
 
 	public readonly components = new Map<string, Component>();
 
-	public constructor(private readonly env: Env) {}
+	public constructor(private readonly env: Env, private readonly prisma: PrismaClient) {}
 
 	public async handleAutocomplete(interaction: AutocompleteInteraction) {
 		const command = this.commands.get(interaction.commandName) as Command | CommandWithSubcommands | undefined;
@@ -100,7 +104,57 @@ export class CommandHandler {
 	public async handleCommand(interaction: CommandInteraction) {
 		const command = this.commands.get(interaction.commandName) as Command | CommandWithSubcommands | undefined;
 		if (!command) {
-			logger.warn(interaction, 'Command interaction not registered locally was not chatInput');
+			if (interaction.inCachedGuild()) {
+				const socialInteraction = await this.prisma.socialInteraction.findFirst({
+					where: {
+						guildId: interaction.guildId,
+						commandId: interaction.commandId,
+					},
+				});
+
+				if (!socialInteraction) {
+					logger.warn({ interaction }, 'Seemingly a social interaction had no entry in the database');
+					return interaction.reply(
+						"If you're trying to use a social interaction, it had no entry in the database. This is a bug.",
+					);
+				}
+
+				const targets = interaction.options.data.map((option) => option.user!.toString()).join(', ');
+				const content = templateSocialInteraction(socialInteraction.content, {
+					author: interaction.user.toString(),
+					targets,
+				});
+
+				if (socialInteraction.embed) {
+					const embed = new EmbedBuilder().setDescription(content).setColor(Colors.Blurple);
+
+					if (socialInteraction.attachmentUrl) {
+						embed.setImage(socialInteraction.attachmentUrl);
+					}
+
+					await interaction.reply({ embeds: [embed] });
+				} else {
+					await interaction.reply({
+						content,
+						files: socialInteraction.attachmentUrl ? [socialInteraction.attachmentUrl] : [],
+					});
+				}
+
+				await this.prisma.socialInteraction.update({
+					data: {
+						uses: {
+							increment: 1,
+						},
+					},
+					where: {
+						guildId_name: {
+							guildId: interaction.guildId,
+							name: socialInteraction.name,
+						},
+					},
+				});
+			}
+
 			return;
 		}
 

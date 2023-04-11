@@ -11,7 +11,6 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		name: 'level',
 		description: 'Displays information about your current level',
 		type: ApplicationCommandType.ChatInput,
-		default_member_permissions: '0',
 		dm_permission: false,
 		options: [],
 	};
