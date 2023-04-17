@@ -10,7 +10,7 @@ import { assertDebug } from '../../util/assert.js';
 import { calculateTotalRequiredXp, calculateUserLevel } from '../../util/calculateLevel.js';
 import { logger } from '../../util/logger.js';
 import { SYMBOLS } from '../../util/symbols.js';
-import type { TemplateData } from '../../util/templateLevelUpMessage.js';
+import type { LevelUpMessageTemplateData } from '../../util/templateLevelUpMessage.js';
 import { templateLevelUpMessage } from '../../util/templateLevelUpMessage.js';
 
 @singleton()
@@ -151,7 +151,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 				logger.warn({ err: error }, 'Failed to set roles for user after leveling up');
 			}
 
-			const template: TemplateData = {
+			const template: LevelUpMessageTemplateData = {
 				earnedRewards: earnedRewards.length
 					? ` and received: ${earnedRewards.map((reward) => rewardRoles.get(reward.roleId)!.name).join(', ')}`
 					: '',

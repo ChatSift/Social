@@ -26,6 +26,7 @@ model GuildSettings {
   levelUpNotificationMessage           String?
 }
 
+// Leveling
 model Reward {
   roleId  String
   guildId String
@@ -52,4 +53,20 @@ model Channel {
   multiplier Int?    @default(1)
 
   @@id([channelId, guildId])
+}
+
+// Interactions
+model SocialInteraction {
+  guildId       String
+  commandId     String
+  name          String
+  content       String
+  color         String?
+  plainContent  String?
+  attachmentUrl String?
+  uses          Int     @default(0)
+  embed         Boolean @default(false)
+  allowTargets  Boolean @default(false)
+
+  @@id([guildId, name])
 }
