@@ -27,6 +27,16 @@ export default class implements Subcommand {
 				required: true,
 			},
 			{
+				name: 'plain-content',
+				description: 'If using embeds, content that should go outside of it',
+				type: ApplicationCommandOptionType.String,
+			},
+			{
+				name: 'color',
+				description: 'If using embeds, the color of the embed',
+				type: ApplicationCommandOptionType.String,
+			},
+			{
 				name: 'attachment-url',
 				description: 'Optional attachment URL',
 				type: ApplicationCommandOptionType.String,
@@ -51,6 +61,8 @@ export default class implements Subcommand {
 
 		const name = interaction.options.getString('name', true);
 		const content = interaction.options.getString('content', true);
+		const plainContent = interaction.options.getString('plain-content');
+		const color = interaction.options.getString('color');
 		const attachmentUrl = interaction.options.getString('attachment-url');
 		const embed = interaction.options.getBoolean('embed');
 		const allowTargets = interaction.options.getBoolean('allow-targets');
@@ -108,6 +120,8 @@ export default class implements Subcommand {
 				data: {
 					commandId: created.id,
 					content,
+					plainContent: plainContent ?? existing.plainContent,
+					color: color ?? existing.color,
 					attachmentUrl: attachmentUrl ?? existing.attachmentUrl,
 					embed: embed ?? existing.embed,
 					allowTargets: allowTargets ?? existing.allowTargets,
@@ -131,6 +145,8 @@ export default class implements Subcommand {
 				guildId: interaction.guildId,
 				name,
 				content,
+				plainContent,
+				color,
 				attachmentUrl,
 				embed: embed ?? undefined,
 				allowTargets: allowTargets ?? undefined,

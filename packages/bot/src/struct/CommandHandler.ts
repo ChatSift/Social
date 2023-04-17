@@ -120,19 +120,28 @@ export class CommandHandler {
 				}
 
 				const targets = interaction.options.data.map((option) => option.user!.toString()).join(', ');
-				const content = templateSocialInteraction(socialInteraction.content, {
+				const templateData = {
 					author: interaction.user.toString(),
 					targets,
-				});
+				};
+
+				const content = templateSocialInteraction(socialInteraction.content, templateData);
 
 				if (socialInteraction.embed) {
-					const embed = new EmbedBuilder().setDescription(content).setColor(Colors.Blurple);
+					const embed = new EmbedBuilder()
+						.setDescription(content)
+						.setColor((socialInteraction.color as `#${string}`) ?? Colors.Blurple);
 
 					if (socialInteraction.attachmentUrl) {
 						embed.setImage(socialInteraction.attachmentUrl);
 					}
 
-					await interaction.reply({ embeds: [embed] });
+					await interaction.reply({
+						content: socialInteraction.plainContent
+							? templateSocialInteraction(socialInteraction.plainContent, templateData)
+							: undefined,
+						embeds: [embed],
+					});
 				} else {
 					await interaction.reply({
 						content,

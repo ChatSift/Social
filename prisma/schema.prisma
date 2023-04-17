@@ -61,6 +61,8 @@ model SocialInteraction {
   commandId     String
   name          String
   content       String
+  color         String?
+  plainContent  String?
   attachmentUrl String?
   uses          Int     @default(0)
   embed         Boolean @default(false)
