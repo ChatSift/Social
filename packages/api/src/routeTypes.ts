@@ -5,7 +5,7 @@ import type {
 	InferRouteResult,
 	RouteMethod,
 } from '@chatsift/rest-utils';
-import type * as routes from './routes/index';
+import type * as routes from './routes/index.js';
 
 type Narrow<T, U> = T extends U ? T : never;
 type ConstructorToType<TConstructor> = TConstructor extends new (...args: any[]) => infer T ? T : never;
