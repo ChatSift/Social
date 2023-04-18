@@ -15,12 +15,12 @@ enum LevelUpNotificationMode {
 
 model GuildSettings {
   guildId                              String                  @id
-  requiredMessages                     Int
+  requiredMessages                     Int?
   // Stored in seconds
   requiredMessagesTimespan             Int?
-  xpGain                               Int
-  requiredXpBase                       Int
-  requiredXpMultiplier                 Int
+  xpGain                               Int?
+  requiredXpBase                       Int?
+  requiredXpMultiplier                 Int?
   levelUpNotificationMode              LevelUpNotificationMode @default(None)
   levelUpNotificationFallbackChannelId String?
   levelUpNotificationMessage           String?

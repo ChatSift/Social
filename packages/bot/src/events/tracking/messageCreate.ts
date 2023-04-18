@@ -36,7 +36,12 @@ export default class implements Event<typeof Events.MessageCreate> {
 			},
 		});
 
-		if (!settings) {
+		if (
+			!settings ||
+			settings.requiredMessages == null ||
+			settings.requiredMessagesTimespan == null ||
+			settings.xpGain == null
+		) {
 			return null;
 		}
 
@@ -217,7 +222,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 
 	private async isEligible(settings: GuildSettings, user: User, message: Message): Promise<boolean> {
 		// Don't bother with eligibility checks if the guild only requires 1 message
-		if (settings.requiredMessages <= 1) {
+		if (settings.requiredMessages! <= 1) {
 			return true;
 		}
 
@@ -260,7 +265,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 			{
 				user,
 				messageIds,
-				eligible: messageIds.length >= settings.requiredMessages,
+				eligible: messageIds.length >= settings.requiredMessages!,
 			},
 			'Collected user messages in timeframe',
 		);
@@ -270,7 +275,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 		// would be immediately eligible as well. We can't solve this by just deleting the set
 		// (but we still do to freeup memory), as the user wouldn't need to wait for the remainder of the timespan
 		// As such, we'll also mark the user as ineligible with a simple key
-		if (messageIds.length >= settings.requiredMessages) {
+		if (messageIds.length >= settings.requiredMessages!) {
 			if (settings.requiredMessagesTimespan) {
 				const [first] = messageIds as [string];
 				const firstCreatedAt = DiscordSnowflake.timestampFrom(first);

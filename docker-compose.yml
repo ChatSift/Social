@@ -43,7 +43,7 @@ services:
       - ./logs:/usr/social/logs
     depends_on:
       - postgres
-    command: ['yarn prisma migrate deploy', '&&', 'node', '--enable-source-maps', './packages/bot/dist/index.js']
+    command: 'sh -c "yarn prisma migrate deploy && node --enable-source-maps ./packages/bot/dist/index.js"'
 
 volumes:
   postgres-data:

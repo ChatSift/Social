@@ -4,17 +4,7 @@
 // Because otherwise we would need to somehow share our prisma.schema (and 2 others) with the frontend
 // Which would NOT work. Absolutely make sure to use the types below and to cast away any types from @prsisma/client
 
-export const LevelUpNotificationMode = {
-	Channel: 'Channel',
-	DM: 'DM',
-	None: 'None',
-} as const;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type LevelUpNotificationMode = (typeof LevelUpNotificationMode)[keyof typeof LevelUpNotificationMode];
-
 export interface GuildSettings {
-	cleanRewardRoles: boolean;
 	guildId: string;
 	levelUpNotificationFallbackChannelId: string | null;
 	levelUpNotificationMessage: string | null;
@@ -27,6 +17,7 @@ export interface GuildSettings {
 }
 
 export interface Reward {
+	clean: boolean;
 	guildId: string;
 	level: number;
 	roleId: string;
@@ -45,3 +36,25 @@ export interface Channel {
 	ignored: boolean;
 	multiplier: number | null;
 }
+
+export interface SocialInteraction {
+	allowTargets: boolean;
+	attachmentUrl: string | null;
+	color: string | null;
+	commandId: string;
+	content: string;
+	embed: boolean;
+	guildId: string;
+	name: string;
+	plainContent: string | null;
+	uses: number;
+}
+
+export const LevelUpNotificationMode = {
+	Channel: 'Channel',
+	DM: 'DM',
+	None: 'None',
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type LevelUpNotificationMode = (typeof LevelUpNotificationMode)[keyof typeof LevelUpNotificationMode];

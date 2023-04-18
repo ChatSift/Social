@@ -140,7 +140,7 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		const headings = ['General settings', 'Leveling formula', 'Notifications'] as const satisfies readonly string[];
 		const values = [
 			[
-				`Required messages to gain XP: ${inlineCode(settings?.requiredMessages.toString() ?? 'Not set ❗')}`,
+				`Required messages to gain XP: ${inlineCode(settings?.requiredMessages?.toString() ?? 'Not set ❗')}`,
 				`Required message timespan to gain XP: ${inlineCode(
 					settings?.requiredMessagesTimespan?.toString() ?? 'Not set',
 				)}`,
