@@ -22,10 +22,7 @@ container.register(SYMBOLS.redis, { useValue: new Redis(env.redisUrl) });
 
 const commandHandler = container.resolve(CommandHandler);
 await commandHandler.init();
-
-if (env.deploySlashCommands || !env.isProd) {
-	await commandHandler.registerInteractions();
-}
+await commandHandler.registerInteractions();
 
 await container.resolve(EventHandler).init();
 

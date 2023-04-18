@@ -13,7 +13,9 @@ export class Env {
 
 	public readonly cors = process.env.CORS?.split(',') ?? [];
 
-	private readonly KEYS: string[] = ['DISCORD_TOKEN', 'DISCORD_CLIENT_ID'];
+	public readonly useLocalLogging = !this.isProd || !process.env.PARSEABLE_URL;
+
+	private readonly KEYS = ['DISCORD_TOKEN', 'DISCORD_CLIENT_ID'] as const;
 
 	public constructor() {
 		for (const key of this.KEYS) {

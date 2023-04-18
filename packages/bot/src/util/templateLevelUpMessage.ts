@@ -1,9 +1,9 @@
-export type LevelUpMessageTemplateData = {
+export interface LevelUpMessageTemplateData {
 	earnedRewards: string;
 	guildName: string;
 	level: string;
 	username: string;
-};
+}
 
 export function templateLevelUpMessage(content: string, data: LevelUpMessageTemplateData): string {
 	return content.replaceAll(/{{ (?<template>\w+?) }}/gm, (_, template: string) =>

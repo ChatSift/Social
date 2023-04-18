@@ -9,9 +9,9 @@ export class Env {
 
 	public readonly isProd = process.env.NODE_ENV === 'prod';
 
-	public readonly deploySlashCommands = Boolean(process.env.DEPLOY);
-
 	public readonly redisUrl = process.env.REDIS_URL!;
+
+	public readonly useLocalLogging = !this.isProd || !process.env.PARSEABLE_URL;
 
 	private readonly KEYS = ['DISCORD_TOKEN', 'DISCORD_CLIENT_ID', 'NODE_ENV', 'REDIS_URL'] as const;
 

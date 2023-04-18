@@ -3,6 +3,10 @@ import process from 'node:process';
 import type { PinoRotateFileOptions } from '@chatsift/pino-rotate-file';
 import createLogger, { multistream, transport } from 'pino';
 import type { PrettyOptions } from 'pino-pretty';
+import { container } from 'tsyringe';
+import { Env } from '../struct/Env.js';
+
+const env = container.resolve(Env);
 
 const pinoPrettyOptions: PrettyOptions = {
 	colorize: true,
@@ -20,27 +24,29 @@ const pinoRotateFileOptions: PinoRotateFileOptions = {
 	},
 };
 
-export const logger = createLogger(
-	{
-		name: 'API',
-		level: 'trace',
-	},
-	multistream([
-		{
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			stream: transport({
-				target: 'pino-pretty',
-				options: pinoPrettyOptions,
-			}),
-			level: 'trace',
-		},
-		{
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			stream: transport({
-				target: '@chatsift/pino-rotate-file',
-				options: pinoRotateFileOptions,
-			}),
-			level: 'trace',
-		},
-	]),
-);
+export const logger = env.useLocalLogging
+	? createLogger(
+			{
+				name: 'bot',
+				level: 'trace',
+			},
+			multistream([
+				{
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					stream: transport({
+						target: 'pino-pretty',
+						options: pinoPrettyOptions,
+					}),
+					level: 'trace',
+				},
+				{
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					stream: transport({
+						target: '@chatsift/pino-rotate-file',
+						options: pinoRotateFileOptions,
+					}),
+					level: 'trace',
+				},
+			]),
+	  )
+	: createLogger({ level: 'trace' });

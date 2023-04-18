@@ -20,7 +20,6 @@
 		"build": "turbo run build",
 		"format": "prettier --write --plugin-search-dir=. .",
 		"prisma": "dotenv -e .env prisma",
-		"deploy-commands": "rimraf ./packages/bot/dist && turbo run --no-cache build --filter ./packages/bot && dotenv -e .env -v DEPLOY=true -- node --enable-source-maps ./packages/bot/dist/index.js",
 		"start-bot": "dotenv -e .env -- node --enable-source-maps ./packages/bot/dist/index.js",
 		"start-api": "dotenv -e .env -- node --enable-source-maps ./packages/api/dist/index.js",
 		"prepare": "is-ci || husky install",

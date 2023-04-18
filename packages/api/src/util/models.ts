@@ -13,7 +13,7 @@ export const LevelUpNotificationMode = {
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type LevelUpNotificationMode = (typeof LevelUpNotificationMode)[keyof typeof LevelUpNotificationMode];
 
-export type GuildSettings = {
+export interface GuildSettings {
 	cleanRewardRoles: boolean;
 	guildId: string;
 	levelUpNotificationFallbackChannelId: string | null;
@@ -24,24 +24,24 @@ export type GuildSettings = {
 	requiredXpBase: number;
 	requiredXpMultiplier: number;
 	xpGain: number;
-};
+}
 
-export type Reward = {
+export interface Reward {
 	guildId: string;
 	level: number;
 	roleId: string;
-};
+}
 
-export type User = {
+export interface User {
 	guildId: string;
 	ignored: boolean;
 	userId: string;
 	xp: number;
-};
+}
 
-export type Channel = {
+export interface Channel {
 	channelId: string;
 	guildId: string;
 	ignored: boolean;
 	multiplier: number | null;
-};
+}

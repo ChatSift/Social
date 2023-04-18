@@ -1,7 +1,7 @@
-export type SocialInteractionTemplateData = {
+export interface SocialInteractionTemplateData {
 	author: string;
 	targets?: string;
-};
+}
 
 export function templateSocialInteraction(content: string, data: SocialInteractionTemplateData): string {
 	return content.replaceAll(/{{ (?<template>\w+?) }}/gm, (_, template: string) => {

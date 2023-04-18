@@ -11,14 +11,9 @@
 		"NodeJS": "readonly"
 	},
 	"rules": {
-		"@typescript-eslint/ban-types": "off",
-		"@typescript-eslint/no-extraneous-class": "off",
-		"import/extensions": "error",
 		"curly": ["error", "all"],
+		"@typescript-eslint/consistent-type-definitions": ["error", "interface"],
 		"eqeqeq": ["error", "always", { "null": "ignore" }],
-		"no-eq-null": "off",
-		"no-unused-vars": "off",
-		"no-useless-constructor": "off",
-		"unicorn/require-post-message-target-origin": "off"
+		"no-eq-null": "off"
 	}
 }

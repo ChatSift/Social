@@ -19,13 +19,13 @@ type RoutesByPaths = {
 	>;
 };
 
-type RouteMethodMap = {
+interface RouteMethodMap {
 	[RouteMethod.get]: 'get';
 	[RouteMethod.post]: 'post';
 	[RouteMethod.put]: 'put';
 	[RouteMethod.delete]: 'delete';
 	[RouteMethod.patch]: 'patch';
-};
+}
 
 export type SocialRoutes = {
 	[Path in keyof RoutesByPaths]: {
