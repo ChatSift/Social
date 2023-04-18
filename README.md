@@ -17,7 +17,7 @@ With all those notices out of the way, the [docker-compose.yml](./docker-compose
 is probably the easiest way to get started.
 
 Simply create a new file called `.env`, follow the example from [.env.example](./.env.example),
-and then run `docker-compose build && docker-compose up -d`.
+and then run `docker compose build && docker compose up -d`.
 
 Alternatively, you can run your own postgresql instance, install yarn using `npm i -g yarn`,
 run `yarn --immutable`, build the code with `yarn build`, and start up the bot using `yarn start-bot`
@@ -27,9 +27,8 @@ in whatever way keeps it online (e.g. pm2).
 
 ## Updating a self-hosted instance
 
-Assuming you're using Docker, you essentially just need to follow the steps above again.
-`docker-compose build && docker-compose up -d`, re-deploy slash commands, and deploy prisma
-migrations.
+Assuming you're using Docker, you don't have to do anything special.
+`docker compose build && docker compose up -d`
 
 ## Contributing/working on the project
 
