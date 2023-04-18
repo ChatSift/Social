@@ -220,9 +220,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chatsift/logs@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "@chatsift/logs@npm:0.1.0"
+"@chatsift/logs@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@chatsift/logs@npm:0.1.1"
   dependencies:
     "@discordjs/core": ^0.5.0
     "@discordjs/rest": ^1.7.0
@@ -231,7 +231,7 @@ __metadata:
     undici: ^5.21.2
   bin:
     chatsift-logs: ./dist/index.js
-  checksum: a1ad6a77d6425bb7240cb16f57d83c2e06c37c111dfad4a921a9bb86d15060da140f7b5cab06bac8672e1d9a4c756fe0d3d13a03725291dfe5aa1a88041cad21
+  checksum: 84967f569bb67ad7befb6a647e58fc571763890b27419f2ae29968c5ac0cb55e468184aa0b35bd905743f2509dbb9dc013a39925f7222f209d8a8d19d681b5fc
   languageName: node
   linkType: hard
 
@@ -274,7 +274,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@chatsift/social-api@workspace:packages/api"
   dependencies:
-    "@chatsift/logs": ^0.1.0
+    "@chatsift/logs": ^0.1.1
     "@chatsift/pino-rotate-file": ^0.1.2
     "@chatsift/readdir": ^0.2.0
     "@chatsift/rest-utils": ^0.6.2
@@ -304,7 +304,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@chatsift/social-bot@workspace:packages/bot"
   dependencies:
-    "@chatsift/logs": ^0.1.0
+    "@chatsift/logs": ^0.1.1
     "@chatsift/pino-rotate-file": ^0.1.2
     "@chatsift/readdir": ^0.2.0
     "@discordjs/rest": ^1.7.0
