@@ -32,7 +32,6 @@
 		"@commitlint/cli": "^17.6.1",
 		"@commitlint/config-angular": "^17.6.1",
 		"@types/node": "^16.18.23",
-		"dotenv-cli": "^7.2.1",
 		"eslint": "^8.38.0",
 		"eslint-config-neon": "^0.1.42",
 		"eslint-formatter-pretty": "^5.0.0",
@@ -42,5 +41,8 @@
 		"prisma": "^4.12.0",
 		"turbo": "~1.6.3",
 		"typescript": "^4.9.5"
+	},
+	"dependencies": {
+		"dotenv-cli": "^7.2.1"
 	}
 }
