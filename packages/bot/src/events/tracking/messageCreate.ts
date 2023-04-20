@@ -158,7 +158,10 @@ export default class implements Event<typeof Events.MessageCreate> {
 
 			const template: LevelUpMessageTemplateData = {
 				earnedRewards: earnedRewards.length
-					? ` and received: ${earnedRewards.map((reward) => rewardRoles.get(reward.roleId)!.name).join(', ')}`
+					? ` and received: ${earnedRewards
+							.map((reward) => rewardRoles.get(reward.roleId)?.name)
+							.filter((role) => role != null)
+							.join(', ')}`
 					: '',
 				guildName: message.guild.name,
 				level: String(oldLevel + 1),
