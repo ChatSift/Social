@@ -1,9 +1,9 @@
 import type { TRequest } from '@chatsift/rest-utils';
 import { Route, RouteMethod } from '@chatsift/rest-utils';
 import { PrismaClient } from '@prisma/client';
-import type { InferType } from '@sapphire/shapeshift';
+import type { BaseValidator, InferType } from '@sapphire/shapeshift';
 import { s } from '@sapphire/shapeshift';
-import type { Middleware, Request, Response } from 'polka';
+import type { Response } from 'polka';
 import { singleton } from 'tsyringe';
 import type { GuildSettings } from '../util/models.js';
 import { LevelUpNotificationMode } from '../util/models.js';
@@ -27,6 +27,8 @@ export default class extends Route<GuildSettings, Body> {
 		method: RouteMethod.patch,
 		path: '/social/v1/guilds/:guildId/settings/',
 	} as const;
+
+	public override readonly bodyValidationSchema = schema;
 
 	public constructor(private readonly prisma: PrismaClient) {
 		super();
