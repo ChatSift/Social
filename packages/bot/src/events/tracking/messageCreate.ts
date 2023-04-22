@@ -117,8 +117,6 @@ export default class implements Event<typeof Events.MessageCreate> {
 		const oldLevel = calculateUserLevel(settings, user);
 		const requiredXp = calculateTotalRequiredXp(settings, oldLevel + 1);
 
-		logger.trace({ oldLevel, requiredXp, updatedXp: updated.xp }, 'Checking if user leveled up');
-
 		if (updated.xp >= requiredXp) {
 			// Query for all rewards that are eligible for the user just in case they're missing a role
 			// for whatever reason
@@ -235,7 +233,6 @@ export default class implements Event<typeof Events.MessageCreate> {
 		// Check if the user recently gained XP
 		const ineligibleFor = await this.redis.pttl(ineligibleKey);
 		if (ineligibleFor >= 0) {
-			logger.trace({ user, ineligibleFor }, 'User is ineligible for XP gain (ineligible key exists)');
 			return false;
 		}
 
@@ -264,15 +261,6 @@ export default class implements Event<typeof Events.MessageCreate> {
 			now,
 		);
 
-		logger.trace(
-			{
-				user,
-				messageIds,
-				eligible: messageIds.length >= settings.requiredMessages!,
-			},
-			'Collected user messages in timeframe',
-		);
-
 		// If there's more messages than the required amount, the user is eligible
 		// Because our tracking works in a "rolling window" fashion, this would mean that any subsequent messages
 		// would be immediately eligible as well. We can't solve this by just deleting the set
@@ -285,7 +273,6 @@ export default class implements Event<typeof Events.MessageCreate> {
 
 				// The user should be ineligible for the remainder of the timespan
 				const ineligibleFor = settings.requiredMessagesTimespan * 1_000 - (now - firstCreatedAt);
-				logger.trace({ user, diff: now - firstCreatedAt, ineligibleFor }, 'Marking user as ineligible for XP gain');
 				assertDebug(
 					ineligibleFor > 0,
 					new Error('ineligibleFor is negative. will be treating it as |x| to prevent crashing'),
