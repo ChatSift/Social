@@ -23,6 +23,8 @@ export default class implements Subcommand {
 	public constructor(private readonly prisma: PrismaClient) {}
 
 	public async handle(interaction: ChatInputCommandInteraction<'cached'>) {
+		await interaction.deferReply();
+
 		const name = interaction.options.getString('name', true);
 
 		try {
@@ -47,6 +49,6 @@ export default class implements Subcommand {
 			return interaction.reply('Could not delete social interaction from the database; does it exist?');
 		}
 
-		await interaction.reply('Deleted interaction.');
+		await interaction.editReply('Deleted interaction.');
 	}
 }
