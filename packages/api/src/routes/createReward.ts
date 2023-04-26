@@ -4,12 +4,14 @@ import { conflict } from '@hapi/boom';
 import { Prisma, PrismaClient } from '@prisma/client';
 import type { InferType } from '@sapphire/shapeshift';
 import { s } from '@sapphire/shapeshift';
-import type { Middleware, NextHandler, Request, Response } from 'polka';
+import type { NextHandler, Response } from 'polka';
 import { PrismaError } from 'prisma-error-enum';
 import { singleton } from 'tsyringe';
 import type { Reward } from '../util/models.js';
+import { snowflakeSchema } from '../util/snowflakeSchema.js';
 
 const schema = s.object({
+	roleId: snowflakeSchema,
 	level: s.number.greaterThanOrEqual(1),
 	clean: s.boolean.default(false),
 }).strict;
@@ -19,7 +21,7 @@ type Body = InferType<typeof schema>;
 export default class extends Route<Reward, Body> {
 	public info = {
 		method: RouteMethod.put,
-		path: '/social/v1/guilds/:guildId/rewards/:roleId',
+		path: '/social/v1/guilds/:guildId/rewards',
 	} as const;
 
 	public override readonly bodyValidationSchema = schema;
@@ -29,13 +31,13 @@ export default class extends Route<Reward, Body> {
 	}
 
 	public async handle(req: TRequest<Body>, res: Response, next: NextHandler) {
-		const { guildId, roleId } = req.params as { guildId: string; roleId: string };
+		const { guildId } = req.params as { guildId: string };
 
 		try {
 			const reward = await this.prisma.reward.create({
 				data: {
 					guildId,
-					roleId,
+					roleId: req.body.roleId,
 					level: req.body.level,
 					clean: req.body.clean,
 				},

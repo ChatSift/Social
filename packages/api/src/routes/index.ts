@@ -1,2 +1,14 @@
+export { default as CreateChannelRoute } from './createChannel.js';
+export { default as CreateRewardRoute } from './createReward.js';
+export { default as CreateSocialInteractionRoute } from './createSocialInteraction.js';
+export { default as DeleteChannelRoute } from './deleteChannel.js';
+export { default as DeleteRewardRoute } from './deleteReward.js';
+export { default as DeleteSocialInteractionRoute } from './deleteSocialInteraction.js';
+export { default as GetChannelsRoute } from './getChannels.js';
+export { default as GetRewardsRoute } from './getRewards.js';
 export { default as GetSettingsRoute } from './getSettings.js';
+export { default as GetSocialInteractionsRoute } from './getSocialInteractions.js';
+export { default as UpdateChannelRoute } from './updateChannel.js';
+export { default as UpdateRewardRoute } from './updateReward.js';
 export { default as UpdateSettingsRoute } from './updateSettings.js';
+export { default as UpdateSocialInteractionRoute } from './updateSocialInteraction.js';

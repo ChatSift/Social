@@ -4,12 +4,14 @@ import { conflict } from '@hapi/boom';
 import { Prisma, PrismaClient } from '@prisma/client';
 import type { InferType } from '@sapphire/shapeshift';
 import { s } from '@sapphire/shapeshift';
-import type { NextHandler, Request, Response } from 'polka';
+import type { NextHandler, Response } from 'polka';
 import { PrismaError } from 'prisma-error-enum';
 import { singleton } from 'tsyringe';
 import type { Channel } from '../util/models.js';
+import { snowflakeSchema } from '../util/snowflakeSchema.js';
 
 const schema = s.object({
+	channelId: snowflakeSchema,
 	ignored: s.boolean.default(false),
 	multiplier: s.number.greaterThanOrEqual(1).default(1),
 }).strict;
@@ -19,7 +21,7 @@ type Body = InferType<typeof schema>;
 export default class extends Route<Channel, Body> {
 	public info = {
 		method: RouteMethod.put,
-		path: '/social/v1/guilds/:guildId/channels/:channelId',
+		path: '/social/v1/guilds/:guildId/channels',
 	} as const;
 
 	public override readonly bodyValidationSchema = schema;
@@ -29,13 +31,13 @@ export default class extends Route<Channel, Body> {
 	}
 
 	public async handle(req: TRequest<Body>, res: Response, next: NextHandler) {
-		const { guildId, channelId } = req.params as { channelId: string; guildId: string };
+		const { guildId } = req.params as { guildId: string };
 
 		try {
 			const channel = await this.prisma.channel.create({
 				data: {
 					guildId,
-					channelId,
+					channelId: req.body.channelId,
 					ignored: req.body.ignored,
 					multiplier: req.body.multiplier,
 				},
