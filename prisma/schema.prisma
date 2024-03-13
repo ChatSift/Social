@@ -55,6 +55,14 @@ model Channel {
   @@id([channelId, guildId])
 }
 
+model Role {
+  roleId     String
+  guildId    String
+  multiplier Int?   @default(1)
+
+  @@id([roleId, guildId])
+}
+
 // Interactions
 model SocialInteraction {
   guildId       String

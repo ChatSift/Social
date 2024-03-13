@@ -95,6 +95,19 @@ export default class implements Event<typeof Events.MessageCreate> {
 			return null;
 		}
 
+		const role = await this.prisma.role.findMany({
+			where: {
+				roleId: {
+					in: message.member!.roles.cache.map((role) => role.id),
+				},
+			},
+		});
+
+		let increment = settings.xpGain * (channel?.multiplier ?? 1);
+		if (role.length) {
+			increment *= role.reduce((acc, role) => acc * (role.multiplier ?? 1), 1);
+		}
+
 		// Grant XP
 		const updated = await this.prisma.user.update({
 			where: {
@@ -105,7 +118,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 			},
 			data: {
 				xp: {
-					increment: settings.xpGain * (channel?.multiplier ?? 1),
+					increment,
 				},
 			},
 		});
