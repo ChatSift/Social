@@ -30,7 +30,7 @@ export default class implements Subcommand {
 	public constructor(private readonly prisma: PrismaClient) {}
 
 	public async handle(interaction: ChatInputCommandInteraction<'cached'>) {
-		const role = interaction.options.getChannel('role', true);
+		const role = interaction.options.getRole('role', true);
 		const multiplier = interaction.options.getInteger('multiplier', true);
 
 		await this.prisma.role.upsert({
