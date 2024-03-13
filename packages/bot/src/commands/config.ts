@@ -97,6 +97,8 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		) as TextChannel | null;
 		const levelUpNotificationMessage = interaction.options.getString('level-up-notification-message');
 
+		await interaction.deferReply();
+
 		let settings = await this.prisma.guildSettings.findFirst({ where: { guildId: interaction.guildId } });
 		if (settings) {
 			settings = await this.prisma.guildSettings.update({
@@ -159,7 +161,7 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 			],
 		] as const satisfies readonly (readonly string[])[] & { length: typeof headings.length };
 
-		return interaction.reply({
+		return interaction.editReply({
 			content: headings
 				.map((heading, idx) => {
 					const valuesForHeading = values[idx]!;
