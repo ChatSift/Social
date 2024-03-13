@@ -24,10 +24,10 @@ export default class implements Subcommand {
 			return;
 		}
 
-		const roles = rawRoles.map((role) => `<@&${role.roleId}>`).filter(Boolean);
+		const roles = rawRoles.map((role) => `• <@&${role.roleId}> (${role.multiplier})`);
 
 		return interaction.reply({
-			content: roles.map((role) => `• ${role.toString()} (${role})`).join('\n'),
+			content: roles.join('\n'),
 			allowedMentions: { roles: [] },
 		});
 	}
