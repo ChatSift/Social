@@ -15,6 +15,8 @@ import { templateLevelUpMessage } from '../../util/templateLevelUpMessage.js';
 
 @singleton()
 export default class implements Event<typeof Events.MessageCreate> {
+	private readonly erroredGuilds = new Set<string>();
+
 	public readonly name = Events.MessageCreate;
 
 	public constructor(private readonly prisma: PrismaClient, @inject(SYMBOLS.redis) private readonly redis: Redis) {}
@@ -130,43 +132,44 @@ export default class implements Event<typeof Events.MessageCreate> {
 		const oldLevel = calculateUserLevel(settings, user);
 		const requiredXp = calculateTotalRequiredXp(settings, oldLevel + 1);
 
-		if (updated.xp >= requiredXp) {
-			// Query for all rewards that are eligible for the user just in case they're missing a role
-			// for whatever reason
-			const rewards = await this.prisma.reward.findMany({
-				where: {
-					guildId: user.guildId,
-					level: {
-						lte: oldLevel + 1,
-					},
+		// Query for all rewards that are eligible for the user just in case they're missing a role
+		// for whatever reason
+		const rewards = await this.prisma.reward.findMany({
+			where: {
+				guildId: user.guildId,
+				level: {
+					lte: oldLevel + 1,
 				},
-			});
-			const rewardRoles = message.guild.roles.cache.filter((role) =>
-				rewards.find((reward) => reward.roleId === role.id),
-			);
-			// Now compute the rewards they actually just earned
-			const earnedRewards = rewards.filter((reward) => reward.level === oldLevel + 1);
+			},
+		});
+		const rewardRoles = message.guild.roles.cache.filter((role) => rewards.find((reward) => reward.roleId === role.id));
+		// Now compute the rewards they actually just earned
+		const earnedRewards = rewards.filter((reward) => reward.level === oldLevel + 1);
 
-			const nonManagedExistingRoles = [
-				...message.member!.roles.cache.filter((role) => !role.managed && !rewardRoles.has(role.id)).values(),
-			];
+		const nonManagedExistingRoles = [
+			...message.member!.roles.cache.filter((role) => !role.managed && !rewardRoles.has(role.id)).values(),
+		];
 
-			// Use a set to de-dupe. Iterate over all the rewards and give the user all the non-clean ones, as well as
-			// the rewards for their current level.
-			const roles = [
-				...new Set([
-					...rewards.filter((reward) => !reward.clean).map((reward) => reward.roleId),
-					...earnedRewards.map((reward) => reward.roleId),
-					...nonManagedExistingRoles,
-				]),
-			];
+		// Use a set to de-dupe. Iterate over all the rewards and give the user all the non-clean ones, as well as
+		// the rewards for their current level.
+		const roles = [
+			...new Set([
+				...rewards.filter((reward) => !reward.clean).map((reward) => reward.roleId),
+				...earnedRewards.map((reward) => reward.roleId),
+				...nonManagedExistingRoles,
+			]),
+		];
 
-			try {
+		try {
+			if (!this.erroredGuilds.has(message.guildId)) {
 				await message.member!.roles.set(roles);
-			} catch (error) {
-				logger.warn({ err: error }, 'Failed to set roles for user after leveling up');
 			}
+		} catch (error) {
+			this.erroredGuilds.add(message.guildId);
+			logger.warn({ err: error }, 'Failed to set roles for user');
+		}
 
+		if (updated.xp >= requiredXp) {
 			const template: LevelUpMessageTemplateData = {
 				earnedRewards: earnedRewards.length
 					? ` and received: ${earnedRewards
