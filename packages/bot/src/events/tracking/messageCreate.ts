@@ -142,6 +142,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 				},
 			},
 		});
+
 		const rewardRoles = message.guild.roles.cache.filter((role) => rewards.find((reward) => reward.roleId === role.id));
 		// Now compute the rewards they actually just earned
 		const earnedRewards = rewards.filter((reward) => reward.level === oldLevel + 1);
@@ -157,6 +158,13 @@ export default class implements Event<typeof Events.MessageCreate> {
 				...rewards.filter((reward) => !reward.clean).map((reward) => reward.roleId),
 				...earnedRewards.map((reward) => reward.roleId),
 				...nonManagedExistingRoles,
+				// TODO: We should probably re-think all of this, for now this is a hack for the bug described in this screenshot:
+				// https://sucks-to-b.eu/fuf5or.png
+				...rewards
+					.filter((reward) => reward.clean)
+					.sort((a, b) => b.level - a.level)
+					.slice(0, 1)
+					.map((reward) => reward.roleId),
 			]),
 		];
 
