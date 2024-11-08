@@ -150,6 +150,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 		const nonManagedExistingRoles = [
 			...message.member!.roles.cache.filter((role) => !role.managed && !rewardRoles.has(role.id)).values(),
 		];
+		const managedExistingRoles = [...message.member!.roles.cache.filter((role) => role.managed).values()];
 
 		// Use a set to de-dupe. Iterate over all the rewards and give the user all the non-clean ones, as well as
 		// the rewards for their current level.
@@ -158,6 +159,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 				...rewards.filter((reward) => !reward.clean).map((reward) => reward.roleId),
 				...earnedRewards.map((reward) => reward.roleId),
 				...nonManagedExistingRoles,
+				...managedExistingRoles,
 				// TODO: We should probably re-think all of this, for now this is a hack for the bug described in this screenshot:
 				// https://sucks-to-b.eu/fuf5or.png
 				...rewards
