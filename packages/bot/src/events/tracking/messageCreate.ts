@@ -19,6 +19,7 @@ export default class implements Event<typeof Events.MessageCreate> {
 
 	public readonly name = Events.MessageCreate;
 
+	// @ts-expect-error - tsyringe is unupdated for ts5
 	public constructor(private readonly prisma: PrismaClient, @inject(SYMBOLS.redis) private readonly redis: Redis) {}
 
 	public async handle(message: Message) {

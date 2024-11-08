@@ -39,7 +39,7 @@
 		"is-ci": "^3.0.1",
 		"prettier": "^2.8.7",
 		"turbo": "~1.6.3",
-		"typescript": "^4.9.5"
+		"typescript": "^5.6.3"
 	},
 	"dependencies": {
 		"dotenv-cli": "^7.2.1",

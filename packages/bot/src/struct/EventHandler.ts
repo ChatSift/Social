@@ -25,7 +25,6 @@ export class EventHandler {
 			const event = container.resolve(mod.default);
 			const name = event.name ?? (info.name as keyof ClientEvents);
 
-			// @ts-expect-error - TS doesn't deal with unions here as I'd expect it to
 			this.client.on(name, (...data) => event.handle(...data));
 		}
 	}
