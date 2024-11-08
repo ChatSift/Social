@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import type { ChatInputCommandInteraction } from 'discord.js';
-import { Colors, EmbedBuilder, ApplicationCommandType } from 'discord.js';
+import { Colors, EmbedBuilder, ApplicationCommandType, ApplicationCommandOptionType } from 'discord.js';
 import { singleton } from 'tsyringe';
 import type { Command, CommandBody } from '../struct/Command';
 import { calculateUserLevel, calculateTotalRequiredXp } from '../util/calculateLevel.js';
@@ -12,12 +12,21 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		description: 'Displays information about your current level',
 		type: ApplicationCommandType.ChatInput,
 		dm_permission: false,
-		options: [],
+		options: [
+			{
+				name: 'user',
+				description: 'The user to view level info for',
+				type: ApplicationCommandOptionType.User,
+				required: false,
+			},
+		],
 	};
 
 	public constructor(private readonly prisma: PrismaClient) {}
 
 	public async handle(interaction: ChatInputCommandInteraction<'cached'>) {
+		const targetUser = interaction.options.getUser('user', false) ?? interaction.user;
+
 		const settings = await this.prisma.guildSettings.findFirst({
 			where: {
 				guildId: interaction.guildId,
@@ -36,13 +45,13 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		const user = await this.prisma.user.upsert({
 			create: {
 				guildId: interaction.guildId,
-				userId: interaction.user.id,
+				userId: targetUser.id,
 			},
 			update: {},
 			where: {
 				userId_guildId: {
 					guildId: interaction.guildId,
-					userId: interaction.user.id,
+					userId: targetUser.id,
 				},
 			},
 		});
@@ -78,7 +87,7 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 
 		const embed = new EmbedBuilder()
 			.setAuthor({
-				name: interaction.user.tag,
+				name: targetUser.tag,
 				iconURL: interaction.member.displayAvatarURL(),
 			})
 			.setColor(Colors.Blurple)
