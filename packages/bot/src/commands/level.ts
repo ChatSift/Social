@@ -88,7 +88,7 @@ export default class implements Command<ApplicationCommandType.ChatInput> {
 		const embed = new EmbedBuilder()
 			.setAuthor({
 				name: targetUser.tag,
-				iconURL: interaction.member.displayAvatarURL(),
+				iconURL: targetUser.displayAvatarURL(),
 			})
 			.setColor(Colors.Blurple)
 			.setDescription(info.map((chunk) => `• ${chunk}`).join('\n'));
