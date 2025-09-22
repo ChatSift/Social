@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers';
 import type { GuildSettings, User } from '@prisma/client';
 import { PrismaClient, LevelUpNotificationMode } from '@prisma/client';
 import { DiscordSnowflake } from '@sapphire/snowflake';
@@ -15,7 +16,7 @@ import { templateLevelUpMessage } from '../../util/templateLevelUpMessage.js';
 
 @singleton()
 export default class implements Event<typeof Events.MessageCreate> {
-	private readonly erroredGuilds = new Set<string>();
+	private readonly erroredUsers = new Set<`${string}-${string}`>();
 
 	public readonly name = Events.MessageCreate;
 
@@ -172,11 +173,12 @@ export default class implements Event<typeof Events.MessageCreate> {
 		];
 
 		try {
-			if (!this.erroredGuilds.has(message.guildId)) {
+			if (!this.erroredUsers.has(`${user.userId}-${user.guildId}`)) {
 				await message.member!.roles.set(roles);
 			}
 		} catch (error) {
-			this.erroredGuilds.add(message.guildId);
+			this.erroredUsers.add(`${user.userId}-${user.guildId}`);
+			setTimeout(() => this.erroredUsers.delete(`${user.userId}-${user.guildId}`), 180_000).unref();
 			logger.warn({ err: error }, 'Failed to set roles for user');
 		}
 
